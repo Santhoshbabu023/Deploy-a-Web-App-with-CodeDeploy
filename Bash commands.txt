@@ -1,0 +1,48 @@
+#To grant access to keypair
+icacls "nextwork-keypair.pem" /reset
+icacls "nextwork-keypair.pem" /grant:r "USERNAME:R"
+icacls "nextwork-keypair.pem" /inheritance:r
+
+#TO Connect to your EC2 instance using SSH
+ssh -i nextwork-keypair.pem ec2-user@<your_public_ipv4_dns>
+
+#TO Install Apache Maven
+wget https://archive.apache.org/dist/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
+sudo tar -xzf apache-maven-3.5.2-bin.tar.gz -C /opt
+echo "export PATH=/opt/apache-maven-3.5.2/bin:$PATH" >> ~/.bashrc
+source ~/.bashrc
+
+#TO Install Java
+sudo dnf install -y java-1.8.0-amazon-corretto-devel
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64
+export PATH=/usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64/jre/bin/:$PATH
+
+#To generate a basic Java web app structure
+mvn archetype:generate \
+  -DgroupId=com.nextwork.app \
+  -DartifactId=nextwork-web-project \
+  -DarchetypeArtifactId=maven-archetype-webapp \
+  -DinteractiveMode=false
+
+#To Install Git
+sudo dnf update -y
+sudo dnf install git -y
+
+#To Initialize a new Git repository in this directory 
+git init
+
+#To Add remote origin
+git remote add origin <your_github_repo_url>
+
+#To Add, commit, and push your code to GitHub
+git add . 
+git commit -m "Updated index.jsp with new content"
+git push -u origin master
+
+#To configure Git to use the store credential helper:
+git config --global credential.helper store
+
+#To run the Maven compile command
+mvn -s settings.xml compile
+
+
